@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const firebaseAdmin = require('firebase-admin');
 const { v4: uuidv4 } = require('uuid');
+from dotenv import load_dotenv
 
 load_dotenv()
 
