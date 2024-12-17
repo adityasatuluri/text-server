@@ -27,46 +27,42 @@ const db = firebaseAdmin.firestore();
 const app = express();
 app.use(bodyParser.json());
 
-app.post('/store_data', async (req, res) => {
+app.post("/store_data", async (req, res) => {
   try {
     const data = req.body;
     const process_id = `${Date.now()}-${uuidv4()}`;
-    
+
     // Store initial data in temp collection
     const documentData = {
       ...data,
       process_id: process_id,
-      created_at: firebaseAdmin.firestore.FieldValue.serverTimestamp()
+      created_at: firebaseAdmin.firestore.FieldValue.serverTimestamp(),
     };
-    
+
     // Add document to temp collection
-    const tempRef = db.collection('temp_collection');
+    const tempRef = db.collection("temp_collection");
     await tempRef.add(documentData);
 
-    // Simulate processing and adding to flood_risk collection
-    // You would replace this with your actual processing logic
-    const floodRiskRef = db.collection('flood_risk_data');
-    await floodRiskRef.add({
-      ...documentData,
-      processed: true,
-    });
+    // Wait for the document to be processed and moved to flood_risk_data
+    const snapshot = await db
+      .collection("flood_risk_data")
+      .where("process_id", "==", process_id)
+      .get();
 
-    // Retrieve the document immediately
-    const snapshot = await floodRiskRef.where('process_id', '==', process_id).get();
-    
     if (snapshot.empty) {
-      return res.status(404).json({ message: 'No document found with the given process_id' });
+      return res
+        .status(404)
+        .json({ message: "No processed document found with the given process_id" });
     }
 
     const result = [];
-    snapshot.forEach(doc => {
+    snapshot.forEach((doc) => {
       result.push({ id: doc.id, ...doc.data() });
     });
 
-    res.status(200).json({ message: 'Document retrieved', data: result });
-
+    res.status(200).json({ message: "Document retrieved", data: result });
   } catch (error) {
-    console.error('Error storing data:', error);
+    console.error("Error storing data:", error);
     res.status(400).json({ error: error.message });
   }
 });
