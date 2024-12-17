@@ -43,7 +43,13 @@ app.post('/store_data', async (req, res) => {
     const tempRef = db.collection('temp_collection');
     await tempRef.add(documentData);
 
+    // Simulate processing and adding to flood_risk collection
+    // You would replace this with your actual processing logic
     const floodRiskRef = db.collection('flood_risk_data');
+    await floodRiskRef.add({
+      ...documentData,
+      processed: true,
+    });
 
     // Retrieve the document immediately
     const snapshot = await floodRiskRef.where('process_id', '==', process_id).get();
@@ -73,3 +79,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
