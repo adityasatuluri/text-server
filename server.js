@@ -43,7 +43,7 @@ app.post('/store_data', async (req, res) => {
 
     // Simulate processing and adding to flood_risk collection
     // You would replace this with your actual processing logic
-    const floodRiskRef = db.collection('flood_risk');
+    const floodRiskRef = db.collection('flood_risk_data');
     await floodRiskRef.add({
       ...documentData,
       processed: true,
