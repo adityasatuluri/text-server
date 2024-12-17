@@ -43,11 +43,24 @@ app.post("/store_data", async (req, res) => {
     const tempRef = db.collection("temp_collection");
     await tempRef.add(documentData);
 
-    // Wait for the document to be processed and moved to flood_risk_data
-    const snapshot = await db
-      .collection("flood_risk_data")
-      .where("process_id", "==", process_id)
-      .get();
+    // Retry mechanism to wait for the document to be processed
+    let attempts = 0;
+    const maxAttempts = 5;
+    let snapshot;
+    while (attempts < maxAttempts) {
+      snapshot = await db
+        .collection("flood_risk_data")
+        .where("process_id", "==", process_id)
+        .get();
+
+      if (!snapshot.empty) {
+        break;
+      }
+
+      attempts++;
+      console.log(`Attempt ${attempts}: Waiting for document to be processed...`);
+      await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds before retrying
+    }
 
     if (snapshot.empty) {
       return res
@@ -66,6 +79,7 @@ app.post("/store_data", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
 
 app.get('/', (req, res) => {
   res.status(200).json({ status: 'Server is running' });
