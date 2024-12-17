@@ -2,26 +2,24 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const firebaseAdmin = require('firebase-admin');
 const { v4: uuidv4 } = require('uuid');
-from dotenv import load_dotenv
+require('dotenv').config(); // Ensure .env variables are loaded
 
-load_dotenv()
-
-// Initialize Firebase Admin SDK (same as your original code)
-cred = credentials.Certificate({
+// Initialize Firebase Admin SDK
+const cred = firebaseAdmin.credential.cert({
     "type": "service_account",
-    "project_id": os.getenv("FIREBASE_PROJECT_ID"),
-    "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
-    "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace('\\n', '\n'),
-    "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
-    "client_id": os.getenv("FIREBASE_CLIENT_ID"),
-    "auth_uri": os.getenv("FIREBASE_AUTH_URI"),
-    "token_uri": os.getenv("FIREBASE_TOKEN_URI"),
-    "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_X509_CERT_URL"),
-    "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL"),
-    "universe_domain": os.getenv("FIREBASE_UNIVERSE_DOMAIN")
-})
+    "project_id": process.env.FIREBASE_PROJECT_ID,
+    "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
+    "private_key": process.env.FIREBASE_PRIVATE_KEY.replace('\\n', '\n'),
+    "client_email": process.env.FIREBASE_CLIENT_EMAIL,
+    "client_id": process.env.FIREBASE_CLIENT_ID,
+    "auth_uri": process.env.FIREBASE_AUTH_URI,
+    "token_uri": process.env.FIREBASE_TOKEN_URI,
+    "auth_provider_x509_cert_url": process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
+    "client_x509_cert_url": process.env.FIREBASE_CLIENT_X509_CERT_URL,
+    "universe_domain": process.env.FIREBASE_UNIVERSE_DOMAIN
+});
 
-firebase_admin.initialize_app(cred)
+firebaseAdmin.initializeApp(cred);
 
 const db = firebaseAdmin.firestore();
 const app = express();
@@ -44,7 +42,6 @@ app.post('/store_data', async (req, res) => {
     await tempRef.add(documentData);
 
     // Simulate processing and adding to flood_risk collection
-    // You would replace this with your actual processing logic
     const floodRiskRef = db.collection('flood_risk_data');
     await floodRiskRef.add({
       ...documentData,
