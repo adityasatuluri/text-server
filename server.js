@@ -43,13 +43,7 @@ app.post('/store_data', async (req, res) => {
     const tempRef = db.collection('temp_collection');
     await tempRef.add(documentData);
 
-    // Simulate processing and adding to flood_risk collection
     const floodRiskRef = db.collection('flood_risk_data');
-    await floodRiskRef.add({
-      ...documentData,
-      processed: true,
-      risk_level: 'medium' // Example risk level
-    });
 
     // Retrieve the document immediately
     const snapshot = await floodRiskRef.where('process_id', '==', process_id).get();
