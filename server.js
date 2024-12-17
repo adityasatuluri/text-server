@@ -18,7 +18,6 @@ const serviceAccount = {
   "universe_domain": "googleapis.com"
 };
 
-// Initialize Firebase Admin SDK
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount)
 });
@@ -57,8 +56,14 @@ app.post('/store_data', async (req, res) => {
       process_id: process_id 
     });
   } catch (error) {
+    console.error('Error storing data:', error);
     res.status(400).json({ error: error.message });
   }
+});
+
+// Health check route
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'Server is running' });
 });
 
 // Set port dynamically or default to 5000
