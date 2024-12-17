@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 require('dotenv').config(); // Ensure .env variables are loaded
 
 // Initialize Firebase Admin SDK
-const cred = firebaseAdmin.credential.cert({
+const serviceAccount = {
     "type": "service_account",
     "project_id": process.env.FIREBASE_PROJECT_ID,
     "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
@@ -17,9 +17,11 @@ const cred = firebaseAdmin.credential.cert({
     "auth_provider_x509_cert_url": process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
     "client_x509_cert_url": process.env.FIREBASE_CLIENT_X509_CERT_URL,
     "universe_domain": process.env.FIREBASE_UNIVERSE_DOMAIN
-});
+};
 
-firebaseAdmin.initializeApp(cred);
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert(serviceAccount)
+});
 
 const db = firebaseAdmin.firestore();
 const app = express();
